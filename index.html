@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RajRatna — Full Stack Developer</title>
+  <meta name="description" content="Full Stack Developer crafting high-performance, animated, and user-centric web experiences." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/projects.json">
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <!-- Dynamic gradient background -->
+  <div class="bg-gradient"></div>
+
+  <!-- Cursor blob -->
+  <div class="cursor-blob"></div>
+
+  <!-- Navigation -->
+  <header class="nav">
+    <div class="logo">RajRatna<span class="dot">.</span></div>
+    <nav>
+      <a href="#home" class="nav-link">Home</a>
+      <a href="#about" class="nav-link">About</a>
+      <a href="#skills" class="nav-link">Skills</a>
+      <a href="./assets/My Resume (2).pdf" class="nav-link">Resume</a>
+      <a href="#projects" class="nav-link">Projects</a>
+      <a href="#contact" class="nav-link">Contact</a>
+    </nav>
+    <button class="theme-toggle magnetic" data-color="#7C3AED">Toggle Theme</button>
+  </header>
+
+  <!-- Hero -->
+  <section id="home" class="section hero">
+    <div class="hero-content reveal">
+      <h1 class="headline">
+        Hi, I’m <span class="accent">Rajratna Raju Nikalje</span> — Full‑Stack Developer crafting <span class="accent">fast</span>, <span class="accent">animated</span>, and <span class="accent">delightful</span> web apps.
+      </h1>
+      <p class="subhead">
+        I build responsive interfaces, robust backends, and smooth user journeys—optimized, accessible, and production‑ready.
+      </p>
+      <div class="cta-row">
+        <a href="#projects" class="btn primary magnetic" data-color="#10B981">View Projects</a>
+        <a href="#contact" class="btn ghost magnetic" data-color="#F59E0B">Hire Me</a>
+      </div>
+      <div class="stats">
+        <div class="card reveal">
+          <h3>Performance</h3>
+          <p>Core Web Vitals focused—fast, stable, and responsive.</p>
+        </div>
+        <div class="card reveal">
+          <h3>UX & Motion</h3>
+          <p>Micro‑interactions, magnetic buttons, and fluid transitions.</p>
+        </div>
+        <div class="card reveal">
+          <h3>Reliability</h3>
+          <p>Clean architecture, testable logic, and maintainable code.</p>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual reveal">
+      <div class="glass">
+        <img src="./assets/MyPhoto.png" alt="RajRatna avatar" />
+        <div class="ring ring1"></div>
+        <div class="ring ring2"></div>
+        <div class="ring ring3"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="section about">
+    <div class="container">
+      <div class="about-text reveal">
+        <h2>About me</h2>
+        <p>
+        I am a passionate and dedicated Full-Stack & Blockchain Developer
+        with a solid foundation in web development technologies and
+        blockchain principles. I specialize in creating efficient, scalable, and
+        user-friendly web applications using HTML, CSS, JavaScript, React,
+        Node.js, and Express.js. I am eager to contribute to innovative
+        projects and continuously enhance my skills in decentralized
+        technologies and smart contracts.
+        </p>
+        <ul class="bullets">
+          <li><strong>Frontend:</strong> HTML, CSS, JavaScript, accessibility, responsive design</li>
+          <li><strong>Backend:</strong> Node‑style patterns, REST, data handling, localStorage</li>
+          <li><strong>Debugging:</strong> Root‑cause analysis, performance tuning, edge‑case handling</li>
+        </ul>
+        <a href="#contact" class="btn primary magnetic" data-color="#EF4444">Let’s collaborate</a>
+      </div>
+      <div class="about-cards">
+        <div class="mini-card reveal">
+          <h3>Design systems</h3>
+          <p>Consistent components, tokens, and motion guidelines.</p>
+        </div>
+        <div class="mini-card reveal">
+          <h3>Animations</h3>
+          <p>Intersection reveals, parallax, magnetic hover, cursor trails.</p>
+        </div>
+        <div class="mini-card reveal">
+          <h3>Quality</h3>
+          <p>Semantic HTML, ARIA, keyboard navigation, testing mindset.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills -->
+  <section id="skills" class="section skills">
+    <div class="container">
+      <h2 class="reveal">Skills</h2>
+      <div class="skill-grid">
+        <div class="skill-card reveal">
+          <h3>Frontend</h3>
+          <div class="tags">
+            <span>HTML</span><span>CSS</span><span>JavaScript</span><span>Responsive Web</span><span>React.JS</span>
+          </div>
+        </div>
+        <div class="skill-card reveal">
+          <h3>Backend</h3>
+          <div class="tags">
+            <span>Node.JS</span><span>Express.JS</span><span>MySQL</span><span>MongoDB</span><span>Testing</span>
+          </div>
+        </div>
+        <div class="skill-card reveal">
+          <h3>Tooling</h3>
+          <div class="tags">
+            <span>Git</span><span>GitHub</span><span>Performance</span><span>V.S Code</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects -->
+<section id="projects" class="section projects">
+  <div class="container">
+    <h2 class="reveal">Projects</h2>
+    <p class="muted reveal">Some things I loved building.</p>
+
+    <div class="project-grid">
+      <a href="#" >
+        <article class="project-card reveal delay-1">
+        <div class="project-thumb p1">
+          <img src="./assets/QuickBite background.png" alt="">
+        </div>
+        <div class="project-body">
+          <h3 class="project-title">QuickBite</h3>
+          <p class="project-desc">
+            One Click. One Bite. Total Delight.
+          </p>
+          <div class="project-tags">
+            <span>HTML</span><span>CSS</span><span>JavaScript</span>
+          </div>
+        </div>
+      </article>
+      </a>
+      <a href="#">
+        <article class="project-card reveal delay-2">
+        <div class="project-thumb p2">
+          <img src="./assets/Hotel_Rajratna background.png" alt="">
+        </div>
+        <div class="project-body">
+          <h3 class="project-title">Hotel_Rajratna</h3>
+          <p class="project-desc">
+            Where Comfort Meets Elegance
+          </p>
+          <div class="project-tags">
+            <span>HTML</span><span>CSS</span><span>JavaScript</span>
+          </div>
+        </div>
+      </article>
+      </a>
+
+      <a href="#">
+        <article class="project-card reveal delay-3">
+        <div class="project-thumb p3">
+          <img src="./assets/Lion_gym background.png" alt="">
+        </div>
+        <div class="project-body">
+          <h3 class="project-title">Lions Gym</h3>
+          <p class="project-desc">
+            Be Bold. Be Strong. Be a Lion.
+          </p>
+          <div class="project-tags">
+            <span>HTML</span><span>CSS</span><span>JavaScript</span>
+          </div>
+        </div>
+      </article>
+      </a>
+
+      <a href="#">
+        <article class="project-card reveal delay-4">
+        <div class="project-thumb p4">
+          <img src="assets/Healcare_hospital background.png" alt="">
+        </div>
+        <div class="project-body">
+          <h3 class="project-title">Healcare_Hospital</h3>
+          <p class="project-desc">
+            Your Health, Our Priority
+          </p>
+          <div class="project-tags">
+            <span>HTML</span><span>CSS</span><span>JavaScript</span>
+          </div>
+        </div>
+      </article>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+  <!-- Contact -->
+  <section id="contact" class="section contact">
+    <div class="container">
+      <h2 class="reveal">Contact</h2>
+      <p class="muted reveal">Tell me about your idea—let’s build something users love.</p>
+      <form class="contact-form reveal" id="contactForm" novalidate>
+        <div class="form-row">
+          <label>Name</label>
+          <input type="text" name="name" placeholder="Your name" required />
+        </div>
+        <div class="form-row">
+          <label>Email</label>
+          <input type="email" name="email" placeholder="you@example.com" required />
+        </div>
+        <div class="form-row">
+          <label>Message</label>
+          <textarea name="message" placeholder="What are we building?" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn primary magnetic" data-color="#3B82F6">Send Message</button>
+        <p class="form-status" id="formStatus" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>© <span id="year"></span> RajRatna — Full‑Stack Developer</p>
+  </footer>
+
+  <script src="assets/script.js"></script>
+</body>
+</html>
