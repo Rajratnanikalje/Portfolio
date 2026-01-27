@@ -368,3 +368,156 @@ input:focus, textarea:focus { border-color: var(--accent); background: rgba(255,
 .delay-2 { transition-delay: 0.2s; }
 .delay-3 { transition-delay: 0.3s; }
 .delay-4 { transition-delay: 0.4s; }
+
+
+/* ===============================
+   EXTRA RESPONSIVE FIXES (ADD-ON)
+   =============================== */
+
+/* Tablets & small laptops */
+@media (max-width: 1024px) {
+  .hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .hero-visual img {
+    width: 55%;
+  }
+
+  .stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .nav nav {
+    gap: 6px;
+  }
+}
+
+/* Mobile devices */
+@media (max-width: 768px) {
+  .nav {
+    flex-wrap: wrap;
+    padding: 14px 18px;
+  }
+
+  .nav nav {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .hero {
+    padding: 60px 20px;
+  }
+
+  .headline {
+    font-size: 2rem;
+  }
+
+  .subhead {
+    font-size: 1rem;
+  }
+
+  .cta-row {
+    justify-content: center;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-visual img {
+    width: 65%;
+  }
+
+  .about .container {
+    text-align: center;
+  }
+
+  .bullets {
+    text-align: left;
+  }
+
+  .skill-grid,
+  .projects .project-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Small mobiles */
+@media (max-width: 480px) {
+  .headline {
+    font-size: 1.75rem;
+  }
+
+  .hero-visual img {
+    width: 80%;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .cta-row {
+    gap: 10px;
+  }
+
+  .nav nav a {
+    padding: 6px 8px;
+    font-size: 0.9rem;
+  }
+
+  .project-thumb {
+    height: 140px;
+  }
+}
+
+/* Ultra small devices */
+@media (max-width: 360px) {
+  .headline {
+    font-size: 1.6rem;
+  }
+
+  .subhead {
+    font-size: 0.95rem;
+  }
+}
+
+/* Hamburger menu */
+.menu-toggle {
+  display: none;
+  font-size: 1.6rem;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .nav nav {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 12px;
+    background: rgba(11,15,20,0.95);
+    border-radius: 14px;
+    padding: 12px;
+  }
+
+  .nav nav.active {
+    display: flex;
+  }
+}
+
+@media (max-width: 768px) {
+  .cursor-blob {
+    display: none;
+  }
+}

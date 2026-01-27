@@ -152,3 +152,10 @@ form.addEventListener('submit', (e) => {
     form.reset();
   }, 800);
 });
+
+const menuBtn = document.querySelector('.menu-toggle');
+const navMenu = document.querySelector('.nav nav');
+
+menuBtn.addEventListener('click', () => {
+  navMenu.classList.toggle('active');
+});
