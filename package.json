@@ -1,0 +1,16 @@
+{
+  "name": "portfolio",
+  "version": "1.0.0",
+  "description": "Content-managed full-stack developer portfolio",
+  "main": "server/src/server.js",
+  "scripts": {
+    "dev": "npm run dev --prefix server",
+    "client": "npm run dev --prefix client",
+    "server": "npm run dev --prefix server",
+    "build": "npm run build --prefix client",
+    "start": "npm start --prefix server"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
