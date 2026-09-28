@@ -7,6 +7,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const crypto = require('crypto');
+const { sendContactNotification: sendTelegramNotification } = require('./utils/telegram');
+const { sendPasswordResetOtp } = require('./utils/passwordResetEmail');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -20,7 +22,12 @@ const schemas = {
   Message: { name: { type: String, required: true, maxlength: 100 }, email: { type: String, required: true, maxlength: 254 }, subject: { type: String, required: true, maxlength: 180 }, message: { type: String, required: true, maxlength: 5000 }, read: { type: Boolean, default: false } },
 };
 const models = Object.fromEntries(Object.entries(schemas).map(([name, schema]) => [name, mongoose.models[name] || mongoose.model(name, new mongoose.Schema(schema, { timestamps: true, strict: true }))]));
-const Admin = mongoose.models.Admin || mongoose.model('Admin', new mongoose.Schema({ email: { type: String, unique: true, required: true }, passwordHash: { type: String, required: true } }, { timestamps: true }));
+const Admin = mongoose.models.Admin || mongoose.model('Admin', new mongoose.Schema({
+  email: { type: String, unique: true, required: true }, passwordHash: { type: String, required: true },
+  passwordResetOtpHash: { type: String, default: null }, passwordResetOtpExpiresAt: { type: Date, default: null },
+  passwordResetOtpAttempts: { type: Number, default: 0 }, passwordResetOtpRequestedAt: { type: Date, default: null },
+  passwordResetTokenHash: { type: String, default: null }, passwordResetTokenExpiresAt: { type: Date, default: null },
+}, { timestamps: true }));
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 8 * 1024 * 1024 }, fileFilter: (req, file, cb) => cb(null, ['image/jpeg','image/png','image/webp','image/gif','application/pdf'].includes(file.mimetype)) });
 
 app.disable('x-powered-by');
@@ -33,6 +40,19 @@ const auth = (req, res, next) => {
 };
 const safe = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 const slugify = (s) => String(s || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+const resetResponse = { message: 'If an account exists, an OTP has been sent.' };
+const normalizeEmail = (value) => typeof value === 'string' ? value.normalize('NFKC').trim().toLowerCase() : '';
+const validEmail = (value) => /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(value);
+const hashOtp = (otp) => crypto.createHmac('sha256', process.env.JWT_SECRET).update(otp).digest('hex');
+const hashResetToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
+const matchesHash = (left, right) => {
+  const a = Buffer.from(left || '', 'hex'), b = Buffer.from(right || '', 'hex');
+  return a.length > 0 && a.length === b.length && crypto.timingSafeEqual(a, b);
+};
+const clearResetFields = {
+  passwordResetOtpHash: null, passwordResetOtpExpiresAt: null, passwordResetOtpAttempts: 0,
+  passwordResetTokenHash: null, passwordResetTokenExpiresAt: null,
+};
 const uploadCloud = async (file, folder) => {
   if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) throw Object.assign(new Error('File uploads are not configured'), { status: 503 });
   const timestamp = Math.floor(Date.now()/1000), publicId = `${folder}-${crypto.randomBytes(8).toString('hex')}`;
@@ -50,6 +70,103 @@ const removeCloud = async (publicId, resourceType='image') => {
 const isGoogleDriveUrl = (value) => { try { const url = new URL(value); return url.protocol === 'https:' && ['drive.google.com','docs.google.com'].includes(url.hostname.toLowerCase()); } catch { return false; } };
 
 app.get('/api/health', (req,res)=>res.json({ status:'ok' }));
+app.post('/api/admin/forgot-password', safe(async (req, res) => {
+  const email = normalizeEmail(req.body?.email);
+  if (!validEmail(email)) return res.json(resetResponse);
+  const admin = await Admin.findOne({ email });
+  if (!admin) return res.json(resetResponse);
+
+  const now = new Date();
+  const cooldown = new Date(now.getTime() - 60_000);
+  const otp = String(crypto.randomInt(100000, 1000000));
+  const otpHash = hashOtp(otp);
+  const updated = await Admin.findOneAndUpdate({
+    _id: admin._id,
+    $or: [
+      { passwordResetOtpRequestedAt: { $exists: false } },
+      { passwordResetOtpRequestedAt: null },
+      { passwordResetOtpRequestedAt: { $lte: cooldown } },
+    ],
+  }, { $set: {
+    passwordResetOtpHash: otpHash,
+    passwordResetOtpExpiresAt: new Date(now.getTime() + 10 * 60_000),
+    passwordResetOtpAttempts: 0,
+    passwordResetOtpRequestedAt: now,
+    passwordResetTokenHash: null,
+    passwordResetTokenExpiresAt: null,
+  } }, { new: true });
+  if (!updated) return res.json(resetResponse);
+
+  try {
+    await sendPasswordResetOtp({ to: admin.email, otp });
+  } catch (error) {
+    await Admin.updateOne({ _id: admin._id, passwordResetOtpHash: otpHash }, { $set: clearResetFields });
+    const safeCode = String(error?.code || error?.name || 'DELIVERY_ERROR').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 40);
+    console.warn(`Password reset email delivery failed (${safeCode})`);
+  }
+  return res.json(resetResponse);
+}));
+app.post('/api/admin/verify-reset-otp', safe(async (req, res) => {
+  const email = normalizeEmail(req.body?.email);
+  const otp = typeof req.body?.otp === 'string' ? req.body.otp : '';
+  if (!validEmail(email) || !/^\d{6}$/.test(otp)) return res.status(400).json({ message: 'Invalid or expired OTP.' });
+  const admin = await Admin.findOne({ email });
+  const now = new Date();
+  if (!admin?.passwordResetOtpHash || !admin.passwordResetOtpExpiresAt || admin.passwordResetOtpExpiresAt <= now) {
+    return res.status(400).json({ message: 'Invalid or expired OTP.' });
+  }
+  if (admin.passwordResetOtpAttempts >= 5) {
+    await Admin.updateOne({ _id: admin._id, passwordResetOtpHash: admin.passwordResetOtpHash }, { $set: clearResetFields });
+    return res.status(429).json({ message: 'Too many attempts. Please request a new OTP.' });
+  }
+  const otpHash = hashOtp(otp);
+  if (!matchesHash(admin.passwordResetOtpHash, otpHash)) {
+    const updated = await Admin.findOneAndUpdate({
+      _id: admin._id,
+      passwordResetOtpHash: admin.passwordResetOtpHash,
+      passwordResetOtpExpiresAt: { $gt: now },
+      $or: [{ passwordResetOtpAttempts: { $lt: 5 } }, { passwordResetOtpAttempts: { $exists: false } }],
+    }, { $inc: { passwordResetOtpAttempts: 1 } }, { new: true });
+    if (updated?.passwordResetOtpAttempts >= 5) {
+      await Admin.updateOne({ _id: admin._id, passwordResetOtpHash: admin.passwordResetOtpHash }, { $set: clearResetFields });
+      return res.status(429).json({ message: 'Too many attempts. Please request a new OTP.' });
+    }
+    return res.status(400).json({ message: 'Invalid or expired OTP.' });
+  }
+
+  const resetToken = crypto.randomBytes(32).toString('base64url');
+  const consumed = await Admin.findOneAndUpdate({
+    _id: admin._id,
+    passwordResetOtpHash: admin.passwordResetOtpHash,
+    passwordResetOtpExpiresAt: { $gt: now },
+    $or: [{ passwordResetOtpAttempts: { $lt: 5 } }, { passwordResetOtpAttempts: { $exists: false } }],
+  }, { $set: {
+    passwordResetOtpHash: null, passwordResetOtpExpiresAt: null, passwordResetOtpAttempts: 0,
+    passwordResetTokenHash: hashResetToken(resetToken),
+    passwordResetTokenExpiresAt: new Date(now.getTime() + 10 * 60_000),
+  } }, { new: true });
+  if (!consumed) return res.status(400).json({ message: 'Invalid or expired OTP.' });
+  return res.json({ message: 'OTP verified.', resetToken, expiresIn: 600 });
+}));
+app.post('/api/admin/reset-password', safe(async (req, res) => {
+  const token = typeof req.body?.resetToken === 'string' ? req.body.resetToken : '';
+  const password = typeof req.body?.password === 'string' ? req.body.password : '';
+  if (!token || password.length < 12 || Buffer.byteLength(password, 'utf8') > 72) {
+    return res.status(400).json({ message: 'Password must be at least 12 characters and no more than 72 bytes.' });
+  }
+  const tokenHash = hashResetToken(token);
+  const admin = await Admin.findOne({ passwordResetTokenHash: tokenHash, passwordResetTokenExpiresAt: { $gt: new Date() } });
+  if (!admin) return res.status(400).json({ message: 'Reset authorization is invalid or expired. Request a new OTP.' });
+  const passwordHash = await bcrypt.hash(password, 12);
+  const updated = await Admin.findOneAndUpdate({
+    _id: admin._id, passwordResetTokenHash: tokenHash, passwordResetTokenExpiresAt: { $gt: new Date() },
+  }, { $set: {
+    passwordHash,
+    ...clearResetFields,
+  } }, { new: true });
+  if (!updated) return res.status(400).json({ message: 'Reset authorization is invalid or expired. Request a new OTP.' });
+  return res.json({ message: 'Password reset successfully. You can now log in.' });
+}));
 app.post('/api/auth/login', safe(async (req,res)=>{ const { email, password }=req.body || {}; const admin=await Admin.findOne({ email: String(email||'').toLowerCase().trim() }); if(!admin || !await bcrypt.compare(String(password||''),admin.passwordHash)) return res.status(401).json({ message:'Email or password is incorrect' }); const token=jwt.sign({ id:admin.id, email:admin.email },process.env.JWT_SECRET,{expiresIn:'12h'}); res.json({ token, admin:{ email:admin.email } }); }));
 app.get('/api/profile', safe(async(req,res)=>res.json(await models.Profile.findOne().lean() || {})));
 for (const [path, Model] of [['projects',models.Project],['skills',models.Skill],['experience',models.Experience],['education',models.Education]]) {
@@ -65,7 +182,23 @@ app.delete('/api/admin/upload',auth,safe(async(req,res)=>{await removeCloud(req.
 app.get('/api/resume',safe(async(req,res)=>res.json(await models.Resume.findOne({current:true}).lean() || null)));
 app.put('/api/admin/resume',auth,safe(async(req,res)=>{const url=String(req.body?.url||'').trim();if(!isGoogleDriveUrl(url))return res.status(400).json({message:'Enter a valid Google Drive sharing URL'});await models.Resume.updateMany({},{$set:{current:false}});const doc=await models.Resume.create({url,current:true});res.json(doc);}));
 app.delete('/api/admin/resume/:id',auth,safe(async(req,res)=>{const doc=await models.Resume.findByIdAndDelete(req.params.id);if(!doc)return res.status(404).json({message:'Resume not found'});res.json({success:true});}));
-app.post('/api/contact',safe(async(req,res)=>{const {name,email,subject,message}=req.body||{};if(!name?.trim()||!/^\S+@\S+\.\S+$/.test(email||'')||!subject?.trim()||!message?.trim())return res.status(400).json({message:'Please complete all fields with a valid email'});await models.Message.create({name:name.trim(),email:email.trim(),subject:subject.trim(),message:message.trim()});res.status(201).json({message:'Thanks. Your message has been sent.'});}));
+app.post('/api/contact',safe(async(req,res)=>{
+  const input=req.body||{};
+  const singleLine=(value)=>typeof value==='string'?value.normalize('NFKC').replace(/[\u0000-\u001f\u007f]/g,' ').trim():'';
+  const name=singleLine(input.name), email=singleLine(input.email), subject=singleLine(input.subject);
+  const message=typeof input.message==='string'?input.message.normalize('NFKC').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g,'').trim():'';
+  if(!name||name.length>100||!email||email.length>254||!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email)||!subject||subject.length>180||!message||message.length>5000)
+    return res.status(400).json({message:'Please complete all fields with a valid email'});
+
+  const saved=await models.Message.create({name,email,subject,message});
+  const receivedAt=saved.createdAt||new Date();
+  try { await sendTelegramNotification({name,email,subject,message},receivedAt); }
+  catch(error) {
+    const detail=error?.telegramDescription||error?.code||error?.name||'UNKNOWN';
+    console.warn(`Telegram notification failed: ${String(detail).replace(/[\r\n\t]+/g,' ').slice(0,300)}`);
+  }
+  res.status(201).json({message:'Thanks. Your message has been sent.'});
+}));
 app.get('/api/admin/messages',auth,safe(async(req,res)=>res.json(await models.Message.find().sort({createdAt:-1}).lean())));
 app.patch('/api/admin/messages/:id',auth,safe(async(req,res)=>{const item=await models.Message.findByIdAndUpdate(req.params.id,{read:Boolean(req.body.read)},{new:true});if(!item)return res.status(404).json({message:'Message not found'});res.json(item);}));
 app.delete('/api/admin/messages/:id',auth,safe(async(req,res)=>{const item=await models.Message.findByIdAndDelete(req.params.id);if(!item)return res.status(404).json({message:'Message not found'});res.json({success:true});}));

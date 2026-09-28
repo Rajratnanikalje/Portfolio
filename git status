@@ -1,0 +1,13 @@
+warning: in the working copy of '.gitignore', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'client/src/App.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'client/src/App.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/package-lock.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/src/server.js', LF will be replaced by CRLF the next time Git touches it
+ .gitignore               |   1 [32m+[m
+ client/src/App.css       |  61 [32m+++++++++++++++++++++[m
+ client/src/App.jsx       |  38 [32m++++++++++[m[31m---[m
+ server/package-lock.json |  12 [32m++++[m[31m-[m
+ server/package.json      |   3 [32m+[m[31m-[m
+ server/src/server.js     | 137 [32m++++++++++++++++++++++++++++++++++++++++++++++[m[31m-[m
+ 6 files changed, 242 insertions(+), 10 deletions(-)
