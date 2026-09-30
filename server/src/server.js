@@ -13,7 +13,7 @@ const { sendPasswordResetOtp } = require('./utils/passwordResetEmail');
 const app = express();
 const port = process.env.PORT || 5000;
 const schemas = {
-  Profile: { name: { type: String, default: '' }, title: { type: String, default: '' }, shortBio: { type: String, default: '' }, about: { type: String, default: '' }, email: { type: String, default: '' }, phone: { type: String, default: '' }, location: { type: String, default: '' }, image: { type: String, default: '' }, available: { type: Boolean, default: false }, socials: { type: [mongoose.Schema.Types.Mixed], default: [] } },
+  Profile: { name: { type: String, default: '' }, title: { type: String, default: '' }, shortBio: { type: String, default: '' }, about: { type: String, default: '' }, email: { type: String, default: '' }, phone: { type: String, default: '' }, location: { type: String, default: '' }, image: { type: String, default: '' }, logo: { type: String, default: '' }, favicon: { type: String, default: '' }, available: { type: Boolean, default: false }, socials: { type: [mongoose.Schema.Types.Mixed], default: [] } },
   Project: { title: { type: String, required: true, trim: true }, slug: { type: String, unique: true }, shortDescription: String, fullDescription: String, image: String, imagePublicId: String, technologies: [String], category: String, githubUrl: String, liveUrl: String, featured: { type: Boolean, default: false }, published: { type: Boolean, default: false }, displayOrder: { type: Number, default: 0 } },
   Skill: { name: { type: String, required: true }, category: String, level: { type: Number, min: 0, max: 100 }, icon: String, displayOrder: { type: Number, default: 0 }, published: { type: Boolean, default: false } },
   Experience: { jobTitle: { type: String, required: true }, company: String, location: String, startDate: String, endDate: String, currentlyWorking: Boolean, description: String, technologies: [String], displayOrder: Number, published: Boolean },
@@ -28,7 +28,7 @@ const Admin = mongoose.models.Admin || mongoose.model('Admin', new mongoose.Sche
   passwordResetOtpAttempts: { type: Number, default: 0 }, passwordResetOtpRequestedAt: { type: Date, default: null },
   passwordResetTokenHash: { type: String, default: null }, passwordResetTokenExpiresAt: { type: Date, default: null },
 }, { timestamps: true }));
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 8 * 1024 * 1024 }, fileFilter: (req, file, cb) => cb(null, ['image/jpeg','image/png','image/webp','image/gif','application/pdf'].includes(file.mimetype)) });
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 8 * 1024 * 1024 }, fileFilter: (req, file, cb) => cb(null, ['image/jpeg','image/png','image/webp','image/gif','image/svg+xml','application/pdf'].includes(file.mimetype)) });
 
 app.disable('x-powered-by');
 app.use(helmet());

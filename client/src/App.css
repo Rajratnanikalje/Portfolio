@@ -582,3 +582,17 @@
 .admin-layout .admin-notification-view {min-height:39px;margin-top:9px;padding:0 4px;display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid rgba(164,140,255,.24);border-radius:8px;color:#c7baff;font-size:12px;text-decoration:none}
 .admin-layout .admin-notification-view:hover {background:rgba(132,108,221,.12);border-color:rgba(164,140,255,.42)}
 @media(max-width:760px){.admin-layout .admin-notification-popover {right:-45px}.admin-layout .admin-notification-trigger {min-height:36px;padding-inline:9px}}
+
+/* Profile media rows */
+.admin-layout .branding-media-field {padding:15px 16px;border:1px solid rgba(165,177,220,.14);border-radius:12px;background:linear-gradient(135deg,rgba(255,255,255,.035),rgba(255,255,255,.018));gap:11px}
+.admin-layout .branding-media-field>span {font-size:13px;font-weight:600;color:#e0e6f4}
+.admin-layout .branding-media-field .media-control-layout {display:grid;grid-template-columns:104px minmax(0,1fr);align-items:center;gap:8px 16px}
+.admin-layout .branding-media-field .media-preview-frame {width:104px;height:78px;display:grid;place-items:center;overflow:hidden;border:1px solid rgba(165,177,220,.2);border-radius:9px;background:rgba(7,10,19,.42)}
+.admin-layout .branding-media-field .image-upload-preview {width:100%;height:100%;object-fit:cover;border:0;border-radius:0;box-shadow:none}
+.admin-layout .branding-media-field .favicon-preview-frame .image-upload-preview {width:42px;height:42px;object-fit:contain;border-radius:4px}
+.admin-layout .branding-media-field .favicon-preview-unavailable {padding:6px;color:#8995ae;font-size:10px;text-align:center}
+.admin-layout .branding-media-field .media-control-actions {display:flex;align-items:center;flex-wrap:wrap;gap:9px}
+.admin-layout .branding-media-field .media-control-actions .upload-button {margin:0;min-height:40px}
+.admin-layout .branding-media-field .media-control-layout>.image-upload-status,.admin-layout .branding-media-field .media-control-layout>.image-upload-error {grid-column:2;max-width:100%;font-size:12px;line-height:1.5}
+.admin-layout .branding-availability {margin-top:3px;margin-bottom:2px}
+@media(max-width:760px){.admin-layout .branding-media-field {padding:13px}.admin-layout .branding-media-field .media-control-layout {grid-template-columns:82px minmax(0,1fr);gap:8px 12px}.admin-layout .branding-media-field .media-preview-frame {width:82px;height:64px}.admin-layout .branding-media-field .media-control-actions {gap:7px}.admin-layout .branding-media-field .media-control-actions .button {min-height:38px;padding-inline:10px}.admin-layout .branding-media-field .media-control-layout>.image-upload-status,.admin-layout .branding-media-field .media-control-layout>.image-upload-error {font-size:11px}}
