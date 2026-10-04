@@ -596,3 +596,19 @@
 .admin-layout .branding-media-field .media-control-layout>.image-upload-status,.admin-layout .branding-media-field .media-control-layout>.image-upload-error {grid-column:2;max-width:100%;font-size:12px;line-height:1.5}
 .admin-layout .branding-availability {margin-top:3px;margin-bottom:2px}
 @media(max-width:760px){.admin-layout .branding-media-field {padding:13px}.admin-layout .branding-media-field .media-control-layout {grid-template-columns:82px minmax(0,1fr);gap:8px 12px}.admin-layout .branding-media-field .media-preview-frame {width:82px;height:64px}.admin-layout .branding-media-field .media-control-actions {gap:7px}.admin-layout .branding-media-field .media-control-actions .button {min-height:38px;padding-inline:10px}.admin-layout .branding-media-field .media-control-layout>.image-upload-status,.admin-layout .branding-media-field .media-control-layout>.image-upload-error {font-size:11px}}
+
+/* Floating contact and social icons */
+.site-shell .floating-contact-links {position:fixed;z-index:50;right:max(24px,env(safe-area-inset-right));bottom:max(28px,env(safe-area-inset-bottom));top:auto;transform:none;display:flex;flex-direction:column;align-items:center;gap:12px;max-width:calc(100vw - 20px)}
+.site-shell .floating-contact-link {width:56px;height:56px;display:grid;place-items:center;flex:0 0 auto;border-radius:50%;color:#fff;text-decoration:none;box-shadow:0 7px 20px rgba(0,0,0,.32),0 0 15px color-mix(in srgb,currentColor 24%,transparent);transition:transform .2s ease,box-shadow .2s ease;overflow:hidden}
+.site-shell .floating-contact-link svg {width:25px;height:25px;display:block}
+.site-shell .floating-contact-link:hover {transform:translateX(-3px) scale(1.04);box-shadow:0 9px 24px rgba(0,0,0,.38),0 0 19px color-mix(in srgb,currentColor 34%,transparent)}
+.site-shell .floating-contact-link:focus-visible {outline:3px solid #fff;outline-offset:3px}
+.site-shell .floating-whatsapp {background:#20c763;color:#fff}
+.site-shell .floating-call {background:#08aeea;color:#fff}
+.site-shell .floating-email {background:#287be0;color:#fff}
+.site-shell .floating-linkedin {background:#0a66c2;color:#fff}
+.site-shell .floating-github {background:#17191d;color:#fff}
+.site-shell .floating-contact-link[aria-disabled="true"] {opacity:.48;cursor:not-allowed;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+@media(max-width:760px){.site-shell .floating-contact-links{right:max(16px,env(safe-area-inset-right));bottom:max(22px,env(safe-area-inset-bottom));top:auto;transform:none;gap:9px}.site-shell .floating-contact-link{width:52px;height:52px}.site-shell .floating-contact-link svg{width:23px;height:23px}}
+@media(max-width:360px){.site-shell .floating-contact-links{right:max(16px,env(safe-area-inset-right));gap:7px}.site-shell .floating-contact-link{width:48px;height:48px}}
+@media(prefers-reduced-motion:reduce){.site-shell .floating-contact-link{transition:none}}
