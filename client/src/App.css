@@ -560,6 +560,21 @@
 @media(max-width:760px){.site-shell .skill-wall{max-height:420px;padding-right:7px}.site-shell .hero-socials .profile-social-button{min-height:44px}}
 @media(prefers-reduced-motion:reduce){.site-shell .profile-social-button,.site-shell .skill-wall .skill-symbol{transition:none}}
 
+/* Keep mobile skills in a bounded, internally scrollable list. */
+@media(max-width:760px){
+  .site-shell .skill-wall{height:clamp(260px,48vh,380px);max-height:calc(100vh - 250px);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:rgba(169,146,255,.45) rgba(255,255,255,.035);grid-template-columns:repeat(2,minmax(0,1fr));padding:8px 10px 16px 3px;align-content:start}
+  .site-shell .skill-wall .skill-item{min-width:0;padding:14px 12px;gap:10px}
+  .site-shell .skill-wall .skill-item>div{min-width:0}
+  .site-shell .skill-wall .skill-item strong{overflow-wrap:anywhere;word-break:normal}
+  .site-shell .skill-wall .skill-symbol{flex:0 0 36px}
+  .site-shell .skill-wall::-webkit-scrollbar{width:5px}
+  .site-shell .skill-wall::-webkit-scrollbar-track{background:rgba(255,255,255,.035);border-radius:8px}
+  .site-shell .skill-wall::-webkit-scrollbar-thumb{background:rgba(169,146,255,.38);border:1px solid rgba(9,13,25,.65);border-radius:8px}
+}
+@media(max-width:390px){
+  .site-shell .skill-wall{grid-template-columns:minmax(0,1fr)}
+}
+
 /* Admin unread-message notification control */
 .admin-layout .admin-notification-wrap {position:relative;margin-left:auto;flex:0 0 auto}
 .admin-layout .admin-notification-trigger {min-height:38px;padding:0 11px;display:flex;align-items:center;gap:8px;border:1px solid var(--admin-line);border-radius:10px;background:rgba(255,255,255,.035);color:#d7def0;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
